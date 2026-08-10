@@ -13,7 +13,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as AppCategoriesRouteImport } from './routes/_app.categories'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
+import { Route as AppHistoryRouteImport } from './routes/_app.history'
+import { Route as AppSettingsRouteImport } from './routes/_app.settings'
+import { Route as AppTagsRouteImport } from './routes/_app.tags'
 import { Route as AppUploadRouteImport } from './routes/_app.upload'
 import { Route as AppDocumentsIndexRouteImport } from './routes/_app.documents.index'
 import { Route as AppDocumentsDocumentIdIndexRouteImport } from './routes/_app.documents.$documentId.index'
@@ -38,9 +42,29 @@ const RegisterRoute = RegisterRouteImport.update({
   path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppCategoriesRoute = AppCategoriesRouteImport.update({
+  id: '/categories',
+  path: '/categories',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHistoryRoute = AppHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTagsRoute = AppTagsRouteImport.update({
+  id: '/tags',
+  path: '/tags',
   getParentRoute: () => AppRoute,
 } as any)
 const AppUploadRoute = AppUploadRouteImport.update({
@@ -70,7 +94,11 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/categories': typeof AppCategoriesRoute
   '/dashboard': typeof AppDashboardRoute
+  '/history': typeof AppHistoryRoute
+  '/settings': typeof AppSettingsRoute
+  '/tags': typeof AppTagsRoute
   '/upload': typeof AppUploadRoute
   '/documents/': typeof AppDocumentsIndexRoute
   '/documents/$documentId/edit': typeof AppDocumentsDocumentIdEditRoute
@@ -80,7 +108,11 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/categories': typeof AppCategoriesRoute
   '/dashboard': typeof AppDashboardRoute
+  '/history': typeof AppHistoryRoute
+  '/settings': typeof AppSettingsRoute
+  '/tags': typeof AppTagsRoute
   '/upload': typeof AppUploadRoute
   '/documents': typeof AppDocumentsIndexRoute
   '/documents/$documentId/edit': typeof AppDocumentsDocumentIdEditRoute
@@ -92,7 +124,11 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/_app/categories': typeof AppCategoriesRoute
   '/_app/dashboard': typeof AppDashboardRoute
+  '/_app/history': typeof AppHistoryRoute
+  '/_app/settings': typeof AppSettingsRoute
+  '/_app/tags': typeof AppTagsRoute
   '/_app/upload': typeof AppUploadRoute
   '/_app/documents/': typeof AppDocumentsIndexRoute
   '/_app/documents/$documentId/edit': typeof AppDocumentsDocumentIdEditRoute
@@ -104,7 +140,11 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/register'
+    | '/categories'
     | '/dashboard'
+    | '/history'
+    | '/settings'
+    | '/tags'
     | '/upload'
     | '/documents/'
     | '/documents/$documentId/edit'
@@ -114,7 +154,11 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/register'
+    | '/categories'
     | '/dashboard'
+    | '/history'
+    | '/settings'
+    | '/tags'
     | '/upload'
     | '/documents'
     | '/documents/$documentId/edit'
@@ -125,7 +169,11 @@ export interface FileRouteTypes {
     | '/_app'
     | '/login'
     | '/register'
+    | '/_app/categories'
     | '/_app/dashboard'
+    | '/_app/history'
+    | '/_app/settings'
+    | '/_app/tags'
     | '/_app/upload'
     | '/_app/documents/'
     | '/_app/documents/$documentId/edit'
@@ -169,11 +217,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/categories': {
+      id: '/_app/categories'
+      path: '/categories'
+      fullPath: '/categories'
+      preLoaderRoute: typeof AppCategoriesRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/dashboard': {
       id: '/_app/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/history': {
+      id: '/_app/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof AppHistoryRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/settings': {
+      id: '/_app/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/tags': {
+      id: '/_app/tags'
+      path: '/tags'
+      fullPath: '/tags'
+      preLoaderRoute: typeof AppTagsRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/upload': {
@@ -208,7 +284,11 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppRouteChildren {
+  AppCategoriesRoute: typeof AppCategoriesRoute
   AppDashboardRoute: typeof AppDashboardRoute
+  AppHistoryRoute: typeof AppHistoryRoute
+  AppSettingsRoute: typeof AppSettingsRoute
+  AppTagsRoute: typeof AppTagsRoute
   AppUploadRoute: typeof AppUploadRoute
   AppDocumentsIndexRoute: typeof AppDocumentsIndexRoute
   AppDocumentsDocumentIdEditRoute: typeof AppDocumentsDocumentIdEditRoute
@@ -216,7 +296,11 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppCategoriesRoute: AppCategoriesRoute,
   AppDashboardRoute: AppDashboardRoute,
+  AppHistoryRoute: AppHistoryRoute,
+  AppSettingsRoute: AppSettingsRoute,
+  AppTagsRoute: AppTagsRoute,
   AppUploadRoute: AppUploadRoute,
   AppDocumentsIndexRoute: AppDocumentsIndexRoute,
   AppDocumentsDocumentIdEditRoute: AppDocumentsDocumentIdEditRoute,
