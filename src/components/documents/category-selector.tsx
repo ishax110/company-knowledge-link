@@ -17,13 +17,13 @@ export function CategorySelector({
   value: string;
   onChange: (value: string) => void;
   includeAllOption?: boolean;
-  placeholder?: string;
-  triggerClassName?: string;
+  placeholder?: string | undefined;
+  triggerClassName?: string | undefined;
 }) {
   const { data: categories = [], isLoading, isError } = useCategories();
 
   return (
-    <Select value={value || undefined} onValueChange={onChange} disabled={isLoading || isError}>
+    <Select {...(value ? { value } : {})} onValueChange={onChange} disabled={isLoading || isError}>
       <SelectTrigger className={triggerClassName} aria-label="Category">
         <SelectValue
           placeholder={

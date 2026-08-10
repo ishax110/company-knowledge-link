@@ -12,8 +12,8 @@ export function FileUpload({
 }: {
   file: File | null;
   onFileChange: (file: File | null, validationError: string | null) => void;
-  error?: string;
-  hint?: string;
+  error?: string | undefined;
+  hint?: string | undefined;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);

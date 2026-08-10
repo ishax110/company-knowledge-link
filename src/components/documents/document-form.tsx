@@ -31,13 +31,13 @@ export function DocumentForm({
   onCancel,
 }: {
   mode: "create" | "edit";
-  initialValues?: Partial<DocumentFormValues>;
-  existingFileName?: string;
+  initialValues?: Partial<DocumentFormValues> | undefined;
+  existingFileName?: string | undefined;
   submitting: boolean;
   progress: number;
-  apiError?: ApiError | null;
+  apiError?: ApiError | null | undefined;
   onSubmit: (payload: DocumentPayload) => void;
-  onCancel?: () => void;
+  onCancel?: (() => void) | undefined;
 }) {
   const [values, setValues] = useState<DocumentFormValues>({
     title: initialValues?.title ?? "",
@@ -60,14 +60,15 @@ export function DocumentForm({
 
   function validate() {
     const next: Record<string, string> = {};
-    if (!values.title.trim()) next.title = "Title is required.";
-    else if (values.title.trim().length > 160) next.title = "Keep the title under 160 characters.";
+    if (!values.title.trim()) next["title"] = "Title is required.";
+    else if (values.title.trim().length > 160)
+      next["title"] = "Keep the title under 160 characters.";
     if (values.description.length > 2000)
-      next.description = "Keep the description under 2000 characters.";
-    if (!values.category) next.category = "Select a category.";
-    if (mode === "create" && !values.file) next.file = "Attach a document file.";
+      next["description"] = "Keep the description under 2000 characters.";
+    if (!values.category) next["category"] = "Select a category.";
+    if (mode === "create" && !values.file) next["file"] = "Attach a document file.";
     if (mode === "edit" && replaceFile && !values.file)
-      next.file = "Choose a replacement file or turn off file replacement.";
+      next["file"] = "Choose a replacement file or turn off file replacement.";
     setErrors(next);
     return Object.keys(next).length === 0;
   }
@@ -185,14 +186,14 @@ export function DocumentForm({
           {replaceFile ? (
             <FileUpload
               file={values.file}
-              error={fieldError("file")}
+              {...(fieldError("file") ? { error: fieldError("file") as string } : {})}
               onFileChange={(file, validationError) => {
                 setField("file", file);
                 setErrors((prev) => ({ ...prev, ...(validationError ? { file: validationError } : {}) }));
                 if (!validationError) {
                   setErrors((prev) => {
                     const next = { ...prev };
-                    delete next.file;
+                    delete next["file"];
                     return next;
                   });
                 }

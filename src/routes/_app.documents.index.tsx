@@ -63,7 +63,7 @@ function DocumentsPage() {
   const [pendingDelete, setPendingDelete] = useState<DocumentItem | null>(null);
   const { download, remove, downloadingId, deletingId } = useDocumentActions();
 
-  const sortConfig = SORT_OPTIONS[sort];
+  const sortConfig = SORT_OPTIONS[sort as SortValue];
   const query = useDocuments({
     page,
     limit,
@@ -75,8 +75,18 @@ function DocumentsPage() {
   const documents = query.data?.documents ?? [];
   const searching = Boolean(q);
 
-  function updateSearch(next: Partial<{ q?: string; page: number; limit: number; sort: SortValue }>) {
-    navigate({ to: "/documents", search: (prev) => ({ ...prev, ...next }) });
+  type SearchUpdate = {
+    q?: string | undefined;
+    page?: number;
+    limit?: number;
+    sort?: SortValue;
+  };
+
+  function updateSearch(next: SearchUpdate) {
+    navigate({
+      to: "/documents",
+      search: (prev: Record<string, unknown>) => ({ ...prev, ...next }),
+    });
   }
 
   return (
@@ -231,12 +241,14 @@ function DocumentsPage() {
 
       <ConfirmDialog
         open={Boolean(pendingDelete)}
-        onOpenChange={(open) => !open && setPendingDelete(null)}
+        onOpenChange={(open) => {
+          if (!open) setPendingDelete(null);
+        }}
         title="Delete this document?"
         description={
           pendingDelete
             ? `“${pendingDelete.title}” and its stored file will be permanently removed. This cannot be undone.`
-            : undefined
+            : ""
         }
         confirmLabel="Delete document"
         loading={Boolean(pendingDelete && deletingId === pendingDelete._id)}

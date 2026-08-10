@@ -23,7 +23,7 @@ export function ConfirmDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
-  description?: string;
+  description?: string | undefined;
   confirmLabel?: string;
   destructive?: boolean;
   loading?: boolean;

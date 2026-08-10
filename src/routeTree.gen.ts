@@ -10,33 +10,133 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppRouteImport } from './routes/_app'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as RegisterRouteImport } from './routes/register'
+import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
+import { Route as AppUploadRouteImport } from './routes/_app.upload'
+import { Route as AppDocumentsIndexRouteImport } from './routes/_app.documents.index'
+import { Route as AppDocumentsDocumentIdIndexRouteImport } from './routes/_app.documents.$documentId.index'
+import { Route as AppDocumentsDocumentIdEditRouteImport } from './routes/_app.documents.$documentId.edit'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppDashboardRoute = AppDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppUploadRoute = AppUploadRouteImport.update({
+  id: '/upload',
+  path: '/upload',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDocumentsIndexRoute = AppDocumentsIndexRouteImport.update({
+  id: '/documents/',
+  path: '/documents/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDocumentsDocumentIdIndexRoute =
+  AppDocumentsDocumentIdIndexRouteImport.update({
+    id: '/documents/$documentId/',
+    path: '/documents/$documentId/',
+    getParentRoute: () => AppRoute,
+  } as any)
+const AppDocumentsDocumentIdEditRoute =
+  AppDocumentsDocumentIdEditRouteImport.update({
+    id: '/documents/$documentId/edit',
+    path: '/documents/$documentId/edit',
+    getParentRoute: () => AppRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
+  '/dashboard': typeof AppDashboardRoute
+  '/upload': typeof AppUploadRoute
+  '/documents/': typeof AppDocumentsIndexRoute
+  '/documents/$documentId/edit': typeof AppDocumentsDocumentIdEditRoute
+  '/documents/$documentId/': typeof AppDocumentsDocumentIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
+  '/dashboard': typeof AppDashboardRoute
+  '/upload': typeof AppUploadRoute
+  '/documents': typeof AppDocumentsIndexRoute
+  '/documents/$documentId/edit': typeof AppDocumentsDocumentIdEditRoute
+  '/documents/$documentId': typeof AppDocumentsDocumentIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_app': typeof AppRouteWithChildren
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
+  '/_app/dashboard': typeof AppDashboardRoute
+  '/_app/upload': typeof AppUploadRoute
+  '/_app/documents/': typeof AppDocumentsIndexRoute
+  '/_app/documents/$documentId/edit': typeof AppDocumentsDocumentIdEditRoute
+  '/_app/documents/$documentId/': typeof AppDocumentsDocumentIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/register'
+    | '/dashboard'
+    | '/upload'
+    | '/documents/'
+    | '/documents/$documentId/edit'
+    | '/documents/$documentId/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/login'
+    | '/register'
+    | '/dashboard'
+    | '/upload'
+    | '/documents'
+    | '/documents/$documentId/edit'
+    | '/documents/$documentId'
+  id:
+    | '__root__'
+    | '/'
+    | '/_app'
+    | '/login'
+    | '/register'
+    | '/_app/dashboard'
+    | '/_app/upload'
+    | '/_app/documents/'
+    | '/_app/documents/$documentId/edit'
+    | '/_app/documents/$documentId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  RegisterRoute: typeof RegisterRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,22 +148,89 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/dashboard': {
+      id: '/_app/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/upload': {
+      id: '/_app/upload'
+      path: '/upload'
+      fullPath: '/upload'
+      preLoaderRoute: typeof AppUploadRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/documents/': {
+      id: '/_app/documents/'
+      path: '/documents'
+      fullPath: '/documents/'
+      preLoaderRoute: typeof AppDocumentsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/documents/$documentId/': {
+      id: '/_app/documents/$documentId/'
+      path: '/documents/$documentId'
+      fullPath: '/documents/$documentId/'
+      preLoaderRoute: typeof AppDocumentsDocumentIdIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/documents/$documentId/edit': {
+      id: '/_app/documents/$documentId/edit'
+      path: '/documents/$documentId/edit'
+      fullPath: '/documents/$documentId/edit'
+      preLoaderRoute: typeof AppDocumentsDocumentIdEditRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
+interface AppRouteChildren {
+  AppDashboardRoute: typeof AppDashboardRoute
+  AppUploadRoute: typeof AppUploadRoute
+  AppDocumentsIndexRoute: typeof AppDocumentsIndexRoute
+  AppDocumentsDocumentIdEditRoute: typeof AppDocumentsDocumentIdEditRoute
+  AppDocumentsDocumentIdIndexRoute: typeof AppDocumentsDocumentIdIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppDashboardRoute: AppDashboardRoute,
+  AppUploadRoute: AppUploadRoute,
+  AppDocumentsIndexRoute: AppDocumentsIndexRoute,
+  AppDocumentsDocumentIdEditRoute: AppDocumentsDocumentIdEditRoute,
+  AppDocumentsDocumentIdIndexRoute: AppDocumentsDocumentIdIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
+  LoginRoute: LoginRoute,
+  RegisterRoute: RegisterRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
