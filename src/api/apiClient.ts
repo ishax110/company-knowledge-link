@@ -102,7 +102,7 @@ export function normalizeError(error: unknown): ApiError {
     }
 
     const status = axiosError.response.status;
-    const data = axiosError.response.data;
+    const data: unknown = axiosError.response.data;
     const fieldErrors: Record<string, string> = {};
     let message = "";
 
@@ -118,9 +118,10 @@ export function normalizeError(error: unknown): ApiError {
         (data as { message?: string }).message ??
         (data as { error?: string }).error ??
         message;
-    } else if (typeof data === "string" && data && !data.startsWith("<")) {
+    } else if (typeof data === "string" && data.length > 0 && !data.startsWith("<")) {
       message = data;
     }
+
 
     return new ApiError(message || statusMessage(status), status, fieldErrors);
   }
