@@ -48,14 +48,57 @@ export interface DocumentPayload {
   file?: File | null;
 }
 
-function buildFormData(payload: DocumentPayload) {
+/**
+ * Multer on the backend accepts the file under a specific field name. If it
+ * differs from ours it rejects the request with "Unexpected field", so we try
+ * the common conventions in order.
+ */
+const FILE_FIELDS = ["file", "document", "doc", "upload", "attachment"] as const;
+
+function isUnexpectedFieldError(error: unknown) {
+  const message = (error as { message?: string } | null)?.message ?? "";
+  return /unexpected field/i.test(message);
+}
+
+function buildFormData(payload: DocumentPayload, fileField = "file") {
   const form = new FormData();
   form.append("title", payload.title);
   if (payload.description !== undefined) form.append("description", payload.description);
   if (payload.category) form.append("category", payload.category);
   (payload.tags ?? []).forEach((tag) => form.append("tags", tag));
-  if (payload.file) form.append("file", payload.file);
+  if (payload.file) form.append(fileField, payload.file);
   return form;
+}
+
+async function sendWithFileField(
+  send: (
+    form: FormData,
+    config: { onUploadProgress?: (event: { loaded: number; total?: number }) => void },
+  ) => Promise<{ data: DocumentItem | { document: DocumentItem } }>,
+  payload: DocumentPayload,
+  onProgress?: (percent: number) => void,
+) {
+  const config = {
+    onUploadProgress: (event: { loaded: number; total?: number }) => {
+      if (onProgress && event.total) {
+        onProgress(Math.round((event.loaded * 100) / event.total));
+      }
+    },
+  };
+
+  const fields = payload.file ? FILE_FIELDS : (["file"] as const);
+  let lastError: unknown;
+  for (const field of fields) {
+    try {
+      const { data } = await send(buildFormData(payload, field), config);
+      return data;
+    } catch (error) {
+      lastError = error;
+      if (!isUnexpectedFieldError(error)) throw error;
+      onProgress?.(0);
+    }
+  }
+  throw lastError;
 }
 
 export const documentApi = {
@@ -91,31 +134,25 @@ export const documentApi = {
   },
 
   async upload(payload: DocumentPayload, onProgress?: (percent: number) => void) {
-    const { data } = await apiClient.post<DocumentItem | { document: DocumentItem }>(
-      ENDPOINTS.upload,
-      buildFormData(payload),
-      {
-        onUploadProgress: (event) => {
-          if (onProgress && event.total) {
-            onProgress(Math.round((event.loaded * 100) / event.total));
-          }
-        },
-      },
+    const data = await sendWithFileField(
+      (form, config) =>
+        apiClient.post<DocumentItem | { document: DocumentItem }>(ENDPOINTS.upload, form, config),
+      payload,
+      onProgress,
     );
     return (data as { document?: DocumentItem }).document ?? (data as DocumentItem);
   },
 
   async update(id: string, payload: DocumentPayload, onProgress?: (percent: number) => void) {
-    const { data } = await apiClient.put<DocumentItem | { document: DocumentItem }>(
-      ENDPOINTS.byId(id),
-      buildFormData(payload),
-      {
-        onUploadProgress: (event) => {
-          if (onProgress && event.total) {
-            onProgress(Math.round((event.loaded * 100) / event.total));
-          }
-        },
-      },
+    const data = await sendWithFileField(
+      (form, config) =>
+        apiClient.put<DocumentItem | { document: DocumentItem }>(
+          ENDPOINTS.byId(id),
+          form,
+          config,
+        ),
+      payload,
+      onProgress,
     );
     return (data as { document?: DocumentItem }).document ?? (data as DocumentItem);
   },
