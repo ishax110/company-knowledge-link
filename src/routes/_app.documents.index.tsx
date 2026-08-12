@@ -60,7 +60,11 @@ export const Route = createFileRoute("/_app/documents/")({
 });
 
 function DocumentsPage() {
-  const { q, page, limit, sort } = Route.useSearch();
+  const search = Route.useSearch();
+  const q = search.q;
+  const page = search.page ?? 1;
+  const limit = search.limit ?? 10;
+  const sort = search.sort ?? "newest";
   const navigate = useNavigate();
   const [view, setView] = useState<"table" | "grid">("table");
   const [pendingDelete, setPendingDelete] = useState<DocumentItem | null>(null);
