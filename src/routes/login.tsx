@@ -11,9 +11,10 @@ import { normalizeError, type ApiError } from "@/api/apiClient";
 
 export const Route = createFileRoute("/login")({
   ssr: false,
-  validateSearch: (search: Record<string, unknown>) => ({
+  validateSearch: (search: Record<string, unknown>): { redirect?: string | undefined } => ({
     redirect: typeof search["redirect"] === "string" ? (search["redirect"] as string) : undefined,
   }),
+
   head: () => ({
     meta: [
       { title: "Sign in — Knowledge Repository" },

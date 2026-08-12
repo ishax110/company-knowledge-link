@@ -31,7 +31,9 @@ const SORT_OPTIONS: Record<SortValue, { sortBy: string; order: "asc" | "desc"; l
 };
 
 export const Route = createFileRoute("/_app/documents/")({
-  validateSearch: (search: Record<string, unknown>) => ({
+  validateSearch: (
+    search: Record<string, unknown>,
+  ): { q?: string | undefined; page?: number; limit?: number; sort?: SortValue } => ({
     q: typeof search["q"] === "string" && search["q"] ? (search["q"] as string) : undefined,
     page: Number(search["page"]) > 0 ? Number(search["page"]) : 1,
     limit: [10, 20, 50].includes(Number(search["limit"])) ? Number(search["limit"]) : 10,
@@ -39,6 +41,7 @@ export const Route = createFileRoute("/_app/documents/")({
       ? String(search["sort"])
       : "newest") as SortValue,
   }),
+
   head: () => ({
     meta: [
       { title: "Documents — Knowledge Repository" },
@@ -57,7 +60,11 @@ export const Route = createFileRoute("/_app/documents/")({
 });
 
 function DocumentsPage() {
-  const { q, page, limit, sort } = Route.useSearch();
+  const search = Route.useSearch();
+  const q = search.q;
+  const page = search.page ?? 1;
+  const limit = search.limit ?? 10;
+  const sort = search.sort ?? "newest";
   const navigate = useNavigate();
   const [view, setView] = useState<"table" | "grid">("table");
   const [pendingDelete, setPendingDelete] = useState<DocumentItem | null>(null);

@@ -49,24 +49,18 @@ export interface DocumentPayload {
 }
 
 /**
- * Multer on the backend accepts the file under a specific field name. If it
- * differs from ours it rejects the request with "Unexpected field", so we try
- * the common conventions in order.
+ * The backend's Multer instance is `upload.single("document")`, so the file must
+ * be sent under exactly that field name.
  */
-const FILE_FIELDS = ["file", "document", "doc", "upload", "attachment"] as const;
+const FILE_FIELD = "document";
 
-function isUnexpectedFieldError(error: unknown) {
-  const message = (error as { message?: string } | null)?.message ?? "";
-  return /unexpected field/i.test(message);
-}
-
-function buildFormData(payload: DocumentPayload, fileField = "file") {
+function buildFormData(payload: DocumentPayload) {
   const form = new FormData();
   form.append("title", payload.title);
   if (payload.description !== undefined) form.append("description", payload.description);
   if (payload.category) form.append("category", payload.category);
   (payload.tags ?? []).forEach((tag) => form.append("tags", tag));
-  if (payload.file) form.append(fileField, payload.file);
+  if (payload.file) form.append(FILE_FIELD, payload.file);
   return form;
 }
 
@@ -86,20 +80,10 @@ async function sendWithFileField(
     },
   };
 
-  const fields = payload.file ? FILE_FIELDS : (["file"] as const);
-  let lastError: unknown;
-  for (const field of fields) {
-    try {
-      const { data } = await send(buildFormData(payload, field), config);
-      return data;
-    } catch (error) {
-      lastError = error;
-      if (!isUnexpectedFieldError(error)) throw error;
-      onProgress?.(0);
-    }
-  }
-  throw lastError;
+  const { data } = await send(buildFormData(payload), config);
+  return data;
 }
+
 
 export const documentApi = {
   async list(params: DocumentListParams = {}) {

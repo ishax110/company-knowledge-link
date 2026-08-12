@@ -63,9 +63,12 @@ export function DocumentForm({
     if (!values.title.trim()) next["title"] = "Title is required.";
     else if (values.title.trim().length > 160)
       next["title"] = "Keep the title under 160 characters.";
-    if (values.description.length > 2000)
+    if (!values.description.trim()) next["description"] = "Description is required.";
+    else if (values.description.length > 2000)
       next["description"] = "Keep the description under 2000 characters.";
     if (!values.category) next["category"] = "Select a category.";
+    if (values.tags.length === 0) next["tags"] = "Select at least one tag.";
+
     if (mode === "create" && !values.file) next["file"] = "Attach a document file.";
     if (mode === "edit" && replaceFile && !values.file)
       next["file"] = "Choose a replacement file or turn off file replacement.";
