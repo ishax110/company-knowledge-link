@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: knowledge-repository-frontend
+    runtime: node
+    plan: free
+    buildCommand: npm install && NITRO_PRESET=node-server npm run build
+    startCommand: node .output/server/index.mjs
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NITRO_PRESET
+        value: node-server
+      - key: VITE_API_BASE_URL
+        value: https://knowledge-repository.onrender.com
